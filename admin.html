@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin - ตารางสอบ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-page">
+  <div class="admin">
+    <h1>⚙️ จัดการตารางสอบ</h1>
+
+    <label>วันที่
+      <input id="examDate" type="date">
+    </label>
+
+    <label>รูปตารางสอบ
+      <input id="imageFile" type="file" accept="image/*">
+    </label>
+    <div id="previewBox" class="preview-box">ยังไม่ได้เลือกรูป</div>
+
+    <h2>การแสดงผล</h2>
+    <label>ขนาดนาฬิกา: <b id="clockValue">110</b> px
+      <input id="clockSize" type="range" min="40" max="220" value="110">
+    </label>
+
+    <label>ขนาดรูป: <b id="imageValue">90</b>%
+      <input id="imageSize" type="range" min="40" max="100" value="90">
+    </label>
+
+    <label>ตำแหน่งรูป
+      <select id="imagePosition">
+        <option value="center">กึ่งกลาง</option>
+        <option value="top">ด้านบน</option>
+        <option value="bottom">ด้านล่าง</option>
+      </select>
+    </label>
+
+    <label>แสดงวันที่
+      <select id="showDate">
+        <option value="true">เปิด</option>
+        <option value="false">ปิด</option>
+      </select>
+    </label>
+
+    <label>แสดงนาฬิกา
+      <select id="showClock">
+        <option value="true">เปิด</option>
+        <option value="false">ปิด</option>
+      </select>
+    </label>
+
+    <div class="buttons">
+      <button id="saveSettings">💾 บันทึกการตั้งค่า</button>
+      <button id="publish" class="primary">📤 อัปโหลดและเผยแพร่</button>
+    </div>
+
+    <p id="status"></p>
+    <a href="index.html" target="_blank">เปิดหน้าจอแสดงผล ↗</a>
+  </div>
+  <script src="supabase.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

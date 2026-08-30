@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ตารางสอบ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="display" class="display">
+    <header class="topbar">
+      <div id="dateText">กำลังโหลด...</div>
+    </header>
+    <section class="image-wrap">
+      <img id="examImage" alt="ตารางสอบ" hidden>
+      <div id="empty">ยังไม่มีตารางสอบ</div>
+    </section>
+    <div id="clock" class="clock">00:00:00</div>
+  </main>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
