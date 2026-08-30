@@ -10,6 +10,14 @@
 <div class="admin">
 <div class="admin-head"><div><h1>⚙️ จัดการตารางสอบ</h1><p id="userInfo" class="muted"></p></div><button id="logoutBtn" class="danger-btn">ออกจากระบบ</button></div>
 
+<nav class="tabs" id="tabs">
+<button class="tab-btn active" data-tab="exams">📅 ตารางสอบ</button>
+<button class="tab-btn" data-tab="display">🖥️ การแสดงผล</button>
+<button class="tab-btn" data-tab="announce">📢 ประกาศ</button>
+<button class="tab-btn" data-tab="image">🖼️ รูปภาพ</button>
+</nav>
+
+<section class="tab-panel" id="panel-exams">
 <section class="admin-section"><h2>📅 เพิ่มตารางสอบ</h2>
 <div class="grid-2">
 <label>วันที่<input id="examDate" type="date"></label>
@@ -20,8 +28,10 @@
 <label>สถานะ<select id="enabled"><option value="true">แสดง</option><option value="false">ซ่อน</option></select></label>
 </div><button id="addExam" class="primary-btn">＋ เพิ่มรายการ</button></section>
 
-<section class="admin-section"><h2>📝 ตารางสอบ</h2><div id="examTable" class="table-wrap">กำลังโหลด...</div></section>
+<section class="admin-section"><h2>📝 รายการตารางสอบ</h2><div id="examTable" class="table-wrap">กำลังโหลด...</div></section>
+</section>
 
+<section class="tab-panel" id="panel-display" hidden>
 <section class="admin-section"><h2>🖥️ การแสดงผลหน้าจอ</h2>
 <div class="grid-2">
 <label>ขนาดนาฬิกา <b id="clockValue">110</b> px<input id="clockSize" type="range" min="40" max="220"></label>
@@ -33,17 +43,22 @@
 <label>แสดงตารางสอบ<select id="showSchedule"><option value="true">เปิด</option><option value="false">ปิด</option></select></label>
 <label>แสดงรูป<select id="showImage"><option value="true">เปิด</option><option value="false">ปิด</option></select></label>
 </div><button id="saveSettings" class="primary-btn">💾 บันทึกการตั้งค่า</button></section>
+</section>
 
+<section class="tab-panel" id="panel-announce" hidden>
 <section class="admin-section"><h2>📢 ประกาศ</h2>
 <textarea id="announcement" rows="3" placeholder="ข้อความประกาศบนหน้าจอ"></textarea>
 <label class="inline-check"><input id="showAnnouncement" type="checkbox"> แสดงประกาศ</label>
 <button id="saveAnnouncement" class="primary-btn">บันทึกประกาศ</button></section>
+</section>
 
-<section class="admin-section"><h2>🖼️ รูป</h2>
+<section class="tab-panel" id="panel-image" hidden>
+<section class="admin-section"><h2>🖼️ รูปตารางสอบ</h2>
 <input id="imageFile" type="file" accept="image/*">
 <div id="previewBox" class="preview-box">ยังไม่ได้เลือกรูป</div>
 <button id="uploadImage" class="primary-btn">☁️ อัปโหลดรูป</button>
 <button id="removeImage" class="danger-btn">ลบรูปจากหน้าจอ</button></section>
+</section>
 
 <section class="admin-section links"><a href="index.html" target="_blank">📺 เปิดหน้าจอแสดงผล</a></section>
 <p id="status"></p>
