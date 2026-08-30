@@ -10,42 +10,36 @@
 <body>
 <main class="display">
 <header class="topbar">
-<div class="date-block">
-<div id="dateText">กำลังโหลด...</div>
-<div id="announcement" class="announcement" hidden></div>
-</div>
-<div class="top-actions">
-<button id="fullscreenBtn" class="ghost-btn">⛶</button>
-<button id="loginBtn" class="login-btn">🔐 ล็อกอิน</button>
-</div>
+  <div class="date-block">
+    <div id="dateText">กำลังโหลด...</div>
+    <div id="announcement" class="announcement" hidden></div>
+  </div>
+  <div class="top-actions">
+    <button id="fullscreenBtn" class="ghost-btn">⛶</button>
+  </div>
 </header>
+
 <section class="main-area">
-<section class="schedule-card" id="scheduleCard">
-<div class="section-title">📋 ตารางสอบ</div>
-<div id="scheduleList" class="schedule-list"><div class="empty">กำลังโหลดข้อมูล...</div></div>
+  <section class="schedule-card" id="scheduleCard">
+    <div class="section-title">📋 ตารางสอบ</div>
+    <div id="scheduleList" class="schedule-list">
+      <div class="empty">กำลังโหลดข้อมูล...</div>
+    </div>
+  </section>
+
+  <section class="image-wrap image-center" id="imageWrap">
+    <img id="examImage" alt="ตารางสอบ" hidden>
+    <div id="empty" class="empty">ยังไม่มีตารางสอบ</div>
+  </section>
 </section>
-<section class="image-wrap image-center" id="imageWrap">
-<img id="examImage" alt="ตารางสอบ" hidden>
-<div id="empty" class="empty">ยังไม่มีตารางสอบ</div>
-</section>
-</section>
+
 <footer class="bottom-bar clock-right" id="bottomBar">
-<div id="nextExam" class="next-exam"></div>
-<div id="clock" class="clock">00:00:00</div>
-<button id="fullscreenBtn2" class="ghost-btn bottom-fullscreen">⛶</button>
+  <div id="nextExam" class="next-exam"></div>
+  <div id="clock" class="clock">00:00:00</div>
+  <button id="fullscreenBtn2" class="ghost-btn bottom-fullscreen">⛶</button>
 </footer>
 </main>
-<div id="loginModal" class="modal" hidden>
-<div class="modal-card">
-<button id="closeLogin" class="modal-close">×</button>
-<h2>🔐 เข้าสู่ระบบ</h2>
-<p class="muted">สำหรับผู้ดูแลระบบ</p>
-<input id="loginEmail" type="email" placeholder="อีเมล">
-<input id="loginPassword" type="password" placeholder="รหัสผ่าน">
-<button id="doLogin" class="primary-btn">เข้าสู่ระบบ</button>
-<p id="loginStatus"></p>
-</div>
-</div>
+
 <script src="supabase.js"></script>
 <script src="app.js"></script>
 </body>
