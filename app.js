@@ -64,28 +64,38 @@ async function refreshAll(){currentDate=localDateISO();await Promise.all([loadSe
 
 async function fullscreen(){
 try{
-if(!document.fullscreenElement){
-await document.documentElement.requestFullscreen();
-}else{
-await document.exitFullscreen();
-}
-}catch(err){
-// บางเบราว์เซอร์/บาง context (เช่นเปิดผ่าน file:// หรือใน iframe) บล็อก Fullscreen API
-// ใช้โหมดจำลองเต็มจอแทน (position:fixed คลุมทั้งหน้าจอ)
-document.body.classList.toggle("pseudo-fullscreen");
-}
+if(!document.fullscreenElement){await document.documentElement.requestFullscreen();}
+else{await document.exitFullscreen();}
+}catch(err){document.body.classList.toggle("pseudo-fullscreen");}
 }
 
-function openLogin(){$("loginModal").hidden=false;$("loginEmail").focus();}
-function closeLogin(){$("loginModal").hidden=true;$("loginStatus").textContent="";}
+function openLogin(){$("loginModal").hidden=false;$('loginEmail').focus();}
+function closeLogin(){$("loginModal").hidden=true;$('loginStatus').textContent="";}
+
+function loginErrorMessage(error){
+const code=String(error?.code||"").toLowerCase();
+const msg=String(error?.message||"").toLowerCase();
+if(code.includes("email_not_confirmed")||msg.includes("email not confirmed"))return "❌ บัญชียังไม่ได้ยืนยันอีเมล";
+if(code.includes("invalid_credentials")||msg.includes("invalid login credentials"))return "❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง — ตรวจสอบบัญชีและรหัสผ่านล่าสุด";
+if(code.includes("user_not_found")||msg.includes("user not found"))return "❌ ไม่พบบัญชีนี้ใน Supabase Authentication";
+if(msg.includes("rate limit")||code.includes("rate_limit"))return "❌ ลองใหม่อีกครั้งในอีกสักครู่";
+if(msg.includes("fetch")||msg.includes("network")||msg.includes("failed to fetch"))return "❌ เชื่อมต่อ Supabase ไม่สำเร็จ";
+return `❌ Login ไม่สำเร็จ: ${error?.message||error?.code||"Unknown error"}`;
+}
+
 async function doLogin(){
+const email=$("loginEmail").value.trim();
+const password=$("loginPassword").value;
+if(!email||!password){$("loginStatus").textContent="❌ กรุณากรอกอีเมลและรหัสผ่าน";return;}
 $("loginStatus").textContent="กำลังเข้าสู่ระบบ...";
 try{
-const {error}=await sb.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});
-if(error){$("loginStatus").textContent="❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง";return;}
+const {data,error}=await sb.auth.signInWithPassword({email,password});
+if(error){console.error("Supabase login error:",error);$("loginStatus").textContent=loginErrorMessage(error);return;}
+if(!data?.user){$("loginStatus").textContent="❌ เข้าสู่ระบบไม่สำเร็จ: ไม่พบผู้ใช้";return;}
 location.href="admin.html";
 }catch(err){
-$("loginStatus").textContent="❌ เชื่อมต่อไม่สำเร็จ: "+(err?.message||err);
+console.error("Supabase login exception:",err);
+$("loginStatus").textContent=loginErrorMessage(err);
 }
 }
 
