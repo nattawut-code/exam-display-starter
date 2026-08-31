@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id);let selectedFile=null,settings={...DEFAU
 function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
 function fmtTime(t){return t?t.slice(0,5):"";}
-function setStatus(t){$("status").textContent=t;setTimeout(()=>{if($("status").textContent===t)$("status").textContent=""},5000);}
+function setStatus(t){$("status").textContent=t;setTimeout(()=>{if($("status").textContent===t)$("status").textContent=""},8000);}
 
 function initTabs(){
 document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",()=>{
@@ -15,6 +15,7 @@ btn.classList.add("active");$("panel-"+btn.dataset.tab).hidden=false;
 }
 
 async function loadSettings(){
+try{
 const {data,error}=await sb.from("display_settings").select("*").eq("id",1).maybeSingle();
 if(data)settings={...DEFAULTS,...data};
 $("clockSize").value=settings.clock_size;
@@ -30,66 +31,81 @@ $("showImage").value=String(settings.show_image);
 $("announcement").value=settings.announcement||"";
 $("showAnnouncement").checked=!!settings.show_announcement;
 if(settings.image_url)$("previewBox").innerHTML=`<img src="${settings.image_url}" alt="preview">`;
-if(error)setStatus("⚠️ โหลดการตั้งค่าไม่ได้: "+error.message);
+if(error)setStatus(friendlyError(error));
+}catch(err){setStatus(friendlyError(err));}
 }
 
 async function loadExams(){
+try{
 const {data,error}=await sb.from("exams").select("*").eq("exam_date",$("examDate").value).order("start_time");
-if(error){$("examTable").textContent=error.message;return;}
+if(error){$("examTable").textContent=friendlyError(error);return;}
 if(!data?.length){$("examTable").innerHTML='<div class="empty">ไม่มีรายการสอบวันนี้</div>';return;}
 $("examTable").innerHTML=`<table><thead><tr><th>วิชา</th><th>เวลา</th><th>ห้อง</th><th>แสดง</th><th>จัดการ</th></tr></thead><tbody>${data.map(e=>`<tr><td>${esc(e.subject)}</td><td>${esc(fmtTime(e.start_time))} – ${esc(fmtTime(e.end_time))}</td><td>${esc(e.room)}</td><td>${e.enabled?"✅":"ซ่อน"}</td><td><button class="danger-link" onclick="deleteExam('${e.id}')">ลบ</button></td></tr>`).join("")}</tbody></table>`;
+}catch(err){$("examTable").textContent=friendlyError(err);}
 }
 
 window.deleteExam=async id=>{
 if(!confirm("ลบรายการสอบนี้หรือไม่?"))return;
+try{
 const {error}=await sb.from("exams").delete().eq("id",id);
-if(error)return setStatus("❌ "+error.message);
+if(error)return setStatus(friendlyError(error));
 setStatus("✅ ลบแล้ว");loadExams();
+}catch(err){setStatus(friendlyError(err));}
 };
 
 async function addExam(){
 const row={exam_date:$("examDate").value,subject:$("subject").value.trim(),start_time:$("startTime").value,end_time:$("endTime").value,room:$("room").value.trim(),enabled:$("enabled").value==="true"};
 if(!row.exam_date||!row.subject||!row.start_time||!row.end_time)return setStatus("❌ กรุณากรอกข้อมูลให้ครบ");
 if(row.end_time<=row.start_time)return setStatus("❌ เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม");
+try{
 const {error}=await sb.from("exams").insert(row);
-if(error)return setStatus("❌ "+error.message);
+if(error)return setStatus(friendlyError(error));
 $("subject").value="";$("room").value="";
 setStatus("✅ เพิ่มตารางสอบแล้ว");loadExams();
+}catch(err){setStatus(friendlyError(err));}
 }
 
 async function saveSettings(){
 const row={id:1,clock_size:+$("clockSize").value,clock_position:$("clockPosition").value,image_size:+$("imageSize").value,image_position:$("imagePosition").value,show_date:$("showDate").value==="true",show_clock:$("showClock").value==="true",show_schedule:$("showSchedule").value==="true",show_image:$("showImage").value==="true"};
+try{
 const {error}=await sb.from("display_settings").upsert(row);
-setStatus(error?"❌ "+error.message:"✅ บันทึกการตั้งค่าแล้ว");
+setStatus(error?friendlyError(error):"✅ บันทึกการตั้งค่าแล้ว");
+}catch(err){setStatus(friendlyError(err));}
 }
 
 async function saveAnnouncement(){
+try{
 const {error}=await sb.from("display_settings").upsert({id:1,announcement:$("announcement").value.trim(),show_announcement:$("showAnnouncement").checked});
-setStatus(error?"❌ "+error.message:"✅ บันทึกประกาศแล้ว");
+setStatus(error?friendlyError(error):"✅ บันทึกประกาศแล้ว");
+}catch(err){setStatus(friendlyError(err));}
 }
 
 async function uploadImage(){
 if(!selectedFile)return setStatus("❌ กรุณาเลือกรูปก่อน");
 if(selectedFile.size>10*1024*1024)return setStatus("❌ รูปต้องไม่เกิน 10MB");
 setStatus("กำลังอัปโหลด...");
+try{
 const ext=(selectedFile.name.split(".").pop()||"jpg").toLowerCase();
 const path=`display-${Date.now()}.${ext}`;
 const {error}=await sb.storage.from(STORAGE_BUCKET).upload(path,selectedFile,{upsert:false,contentType:selectedFile.type});
-if(error)return setStatus("❌ "+error.message);
+if(error)return setStatus(friendlyError(error));
 const {data}=sb.storage.from(STORAGE_BUCKET).getPublicUrl(path);
 const {error:dbError}=await sb.from("display_settings").upsert({id:1,image_url:data.publicUrl});
-if(dbError)return setStatus("❌ "+dbError.message);
+if(dbError)return setStatus(friendlyError(dbError));
 settings.image_url=data.publicUrl;
 $("previewBox").innerHTML=`<img src="${data.publicUrl}" alt="preview">`;
 setStatus("✅ อัปโหลดรูปเรียบร้อย");
+}catch(err){setStatus(friendlyError(err));}
 }
 
 async function removeImage(){
+try{
 const {error}=await sb.from("display_settings").upsert({id:1,image_url:null});
-if(error)return setStatus("❌ "+error.message);
+if(error)return setStatus(friendlyError(error));
 settings.image_url=null;
 setStatus("✅ ลบรูปจากหน้าจอแล้ว");
 $("previewBox").textContent="ไม่มีรูป";
+}catch(err){setStatus(friendlyError(err));}
 }
 
 initTabs();

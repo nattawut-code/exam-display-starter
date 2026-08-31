@@ -21,27 +21,34 @@ $("imageWrap").className="image-wrap image-"+(settings.image_position||"center")
 }
 
 async function loadSettings(){
+try{
 const {data,error}=await sb.from("display_settings").select("*").eq("id",1).maybeSingle();
 if(!error&&data)settings={...DEFAULTS,...data};
+else if(error)console.error("loadSettings error:",friendlyError(error));
+}catch(err){console.error("loadSettings failed:",friendlyError(err));}
 applySettings();
 }
 
 async function loadExams(){
+try{
 const {data,error}=await sb.from("exams").select("*").eq("exam_date",currentDate).eq("enabled",true).order("start_time");
-if(error)return;
+if(error){console.error("loadExams error:",friendlyError(error));return;}
 exams=data||[];
 renderSchedule();
 renderNextExam();
+}catch(err){console.error("loadExams failed:",friendlyError(err));}
 }
 
 async function loadImage(){
+try{
 const {data,error}=await sb.from("display_settings").select("image_url,announcement,show_announcement").eq("id",1).maybeSingle();
-if(error||!data)return;
+if(error||!data){if(error)console.error("loadImage error:",friendlyError(error));return;}
 const img=$("examImage"),empty=$("empty");
 if(data.image_url){img.src=data.image_url;img.hidden=false;empty.hidden=true;}
 else{img.hidden=true;empty.hidden=false;}
 if(data.show_announcement&&data.announcement){$("announcement").textContent=data.announcement;$("announcement").hidden=false;}
 else $("announcement").hidden=true;
+}catch(err){console.error("loadImage failed:",friendlyError(err));}
 }
 
 function renderSchedule(){
@@ -69,40 +76,15 @@ else{await document.exitFullscreen();}
 }catch(err){document.body.classList.toggle("pseudo-fullscreen");}
 }
 
-function openLogin(){$("loginModal").hidden=false;$('loginEmail').focus();}
-function closeLogin(){$("loginModal").hidden=true;$('loginStatus').textContent="";}
+// หมายเหตุ: ตัดโค้ด login modal ที่เคยผูกกับ #loginBtn/#loginModal/#loginEmail ฯลฯ ออกแล้ว
+// เพราะ element เหล่านี้ไม่มีอยู่ใน index.html อีกต่อไป (admin ไม่ต้องล็อกอินแล้ว)
+// ของเดิมทำให้เกิด TypeError ตั้งแต่โหลดหน้า และสคริปต์ทั้งหมดที่ตามมาไม่ทำงานเลย
 
-function loginErrorMessage(error){
-const code=String(error?.code||"").toLowerCase();
-const msg=String(error?.message||"").toLowerCase();
-if(code.includes("email_not_confirmed")||msg.includes("email not confirmed"))return "❌ บัญชียังไม่ได้ยืนยันอีเมล";
-if(code.includes("invalid_credentials")||msg.includes("invalid login credentials"))return "❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง — ตรวจสอบบัญชีและรหัสผ่านล่าสุด";
-if(code.includes("user_not_found")||msg.includes("user not found"))return "❌ ไม่พบบัญชีนี้ใน Supabase Authentication";
-if(msg.includes("rate limit")||code.includes("rate_limit"))return "❌ ลองใหม่อีกครั้งในอีกสักครู่";
-if(msg.includes("fetch")||msg.includes("network")||msg.includes("failed to fetch"))return "❌ เชื่อมต่อ Supabase ไม่สำเร็จ";
-return `❌ Login ไม่สำเร็จ: ${error?.message||error?.code||"Unknown error"}`;
-}
-
-async function doLogin(){
-const email=$("loginEmail").value.trim();
-const password=$("loginPassword").value;
-if(!email||!password){$("loginStatus").textContent="❌ กรุณากรอกอีเมลและรหัสผ่าน";return;}
-$("loginStatus").textContent="กำลังเข้าสู่ระบบ...";
 try{
-const {data,error}=await sb.auth.signInWithPassword({email,password});
-if(error){console.error("Supabase login error:",error);$("loginStatus").textContent=loginErrorMessage(error);return;}
-if(!data?.user){$("loginStatus").textContent="❌ เข้าสู่ระบบไม่สำเร็จ: ไม่พบผู้ใช้";return;}
-location.href="admin.html";
-}catch(err){
-console.error("Supabase login exception:",err);
-$("loginStatus").textContent=loginErrorMessage(err);
-}
-}
+if($("fullscreenBtn"))$("fullscreenBtn").onclick=fullscreen;
+if($("fullscreenBtn2"))$("fullscreenBtn2").onclick=fullscreen;
+}catch(err){console.error("bind fullscreen buttons failed:",err);}
 
-$("loginBtn").onclick=openLogin;$("closeLogin").onclick=closeLogin;$("doLogin").onclick=doLogin;
-$("fullscreenBtn").onclick=fullscreen;$("fullscreenBtn2").onclick=fullscreen;
-$("loginPassword").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
-$("loginEmail").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginPassword").focus();});
 setInterval(()=>{$("clock").textContent=new Date().toLocaleTimeString("th-TH",{hour12:false});$("dateText").textContent=thaiDate();renderNextExam();},1000);
 setInterval(()=>{if(localDateISO()!==currentDate)refreshAll();},30000);
 
