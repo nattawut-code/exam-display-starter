@@ -47,26 +47,28 @@ function resizeImage(file,maxWidth=1600,quality=.85){
   });
 }
 
-// --- Multiple exam-schedule sets: upload, reorder, auto date-range, history ---
+// --- Multiple exam-schedule sets: upload, reorder, auto date+time range, history ---
 function fmtDateTime(iso){try{return new Date(iso).toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short"})}catch{return iso||""}}
+function toLocalInputValue(iso){if(!iso)return "";const d=new Date(iso);if(isNaN(d))return "";const pad=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`}
+function toIsoOrNull(localValue){return localValue?new Date(localValue).toISOString():null}
 async function loadSchedules(){if(!sb)return;try{const {data,error}=await sb.from("exam_schedules").select("*").order("sort_order",{ascending:true});if(error){console.warn(error.message);return}schedules=data||[];renderScheduleList()}catch(e){console.warn(e)}}
 function renderScheduleList(){
   const list=$("scheduleList");if(!list)return;
   if(!schedules.length){list.innerHTML='<p class="hint">ยังไม่มีชุดตารางสอบ — อัปโหลดชุดแรกด้านบนได้เลย</p>';return}
   list.innerHTML="";
   schedules.forEach((row,i)=>{
-    const today=new Date().toISOString().slice(0,10);
-    const active=(!row.start_date||row.start_date<=today)&&(!row.end_date||row.end_date>=today);
+    const now=new Date();
+    const active=(!row.start_at||new Date(row.start_at)<=now)&&(!row.end_at||new Date(row.end_at)>=now);
     const item=document.createElement("div");item.className="schedule-item";
     item.innerHTML=`
       <img class="schedule-thumb" src="${row.image_url}" alt="">
       <div class="schedule-info">
         <input class="schedule-title-input" type="text" value="${(row.title||"").replace(/"/g,"&quot;")}" placeholder="ชื่อชุด">
         <div class="schedule-dates">
-          <label>เริ่ม<input type="date" class="schedule-start-input" value="${row.start_date||""}"></label>
-          <label>ถึง<input type="date" class="schedule-end-input" value="${row.end_date||""}"></label>
+          <label>เริ่ม<input type="datetime-local" class="schedule-start-input" value="${toLocalInputValue(row.start_at)}"></label>
+          <label>ถึง<input type="datetime-local" class="schedule-end-input" value="${toLocalInputValue(row.end_at)}"></label>
         </div>
-        <div class="schedule-meta"><span class="schedule-status ${active?"is-active":""}">${active?"● กำลังแสดง":"○ ไม่ได้แสดง (นอกช่วงวันที่)"}</span><span class="hint">อัปโหลดเมื่อ ${fmtDateTime(row.created_at)}${row.created_by?` โดย ${row.created_by}`:""}</span></div>
+        <div class="schedule-meta"><span class="schedule-status ${active?"is-active":""}">${active?"● กำลังแสดง":"○ ไม่ได้แสดง (นอกช่วงเวลา)"}</span><span class="hint">อัปโหลดเมื่อ ${fmtDateTime(row.created_at)}${row.created_by?` โดย ${row.created_by}`:""}</span></div>
       </div>
       <div class="schedule-actions">
         <button type="button" class="choice schedule-up" ${i===0?"disabled":""} title="เลื่อนขึ้น">↑</button>
@@ -77,8 +79,8 @@ function renderScheduleList(){
     item.querySelector(".schedule-down").onclick=()=>moveSchedule(row,i,1);
     item.querySelector(".schedule-delete").onclick=()=>deleteSchedule(row);
     item.querySelector(".schedule-title-input").onchange=e=>updateSchedule(row,{title:e.target.value});
-    item.querySelector(".schedule-start-input").onchange=e=>updateSchedule(row,{start_date:e.target.value||null});
-    item.querySelector(".schedule-end-input").onchange=e=>updateSchedule(row,{end_date:e.target.value||null});
+    item.querySelector(".schedule-start-input").onchange=e=>updateSchedule(row,{start_at:toIsoOrNull(e.target.value)});
+    item.querySelector(".schedule-end-input").onchange=e=>updateSchedule(row,{end_at:toIsoOrNull(e.target.value)});
     list.append(item);
   });
 }
@@ -114,7 +116,7 @@ async function addSchedule(){
     const {data}=sb.storage.from(STORAGE_BUCKET).getPublicUrl(path);
     const {data:{session}}=await sb.auth.getSession();
     const maxOrder=schedules.reduce((m,r)=>Math.max(m,r.sort_order??0),-1);
-    const row={title:$("scheduleTitle").value.trim(),image_url:data.publicUrl,storage_path:path,start_date:$("scheduleStart").value||null,end_date:$("scheduleEnd").value||null,sort_order:maxOrder+1,created_by:session?.user?.email||null};
+    const row={title:$("scheduleTitle").value.trim(),image_url:data.publicUrl,storage_path:path,start_at:toIsoOrNull($("scheduleStart").value),end_at:toIsoOrNull($("scheduleEnd").value),sort_order:maxOrder+1,created_by:session?.user?.email||null};
     const {data:inserted,error:insErr}=await sb.from("exam_schedules").insert(row).select().single();
     if(insErr)throw insErr;
     schedules.push(inserted);renderScheduleList();
