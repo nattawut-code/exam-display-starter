@@ -11,6 +11,17 @@
   <main class="admin admin-control">
     <div class="admin-title"><div><p class="eyebrow">EXAM DISPLAY</p><h1>จัดการหน้าจอ</h1><p class="muted">ปรับแล้วดูผลได้ทันทีจาก LIVE PREVIEW</p></div><a class="open-display" href="index.html" target="_blank">เปิดหน้าจอแสดงผล ↗</a></div>
 
+    <section class="control-card" aria-label="เข้าสู่ระบบผู้ดูแล">
+      <h2>เข้าสู่ระบบผู้ดูแล</h2>
+      <p id="authStatus" class="hint">กำลังตรวจสอบการเข้าสู่ระบบ…</p>
+      <div id="signInForm" class="auth-form">
+        <input id="email" type="email" autocomplete="email" placeholder="อีเมลผู้ดูแล">
+        <input id="password" type="password" autocomplete="current-password" placeholder="รหัสผ่าน">
+        <button id="signIn" class="secondary" type="button">เข้าสู่ระบบ</button>
+      </div>
+      <button id="signOut" class="secondary" type="button" hidden>ออกจากระบบ</button>
+    </section>
+
     <div class="control-layout">
       <section class="control-panel">
         <section class="control-card">
