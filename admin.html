@@ -5,59 +5,46 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Admin - ตารางสอบ</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="admin-page">
-  <div class="admin">
-    <h1>⚙️ จัดการตารางสอบ</h1>
+  <main class="admin admin-control">
+    <div class="admin-title"><div><p class="eyebrow">EXAM DISPLAY</p><h1>จัดการหน้าจอ</h1><p class="muted">ปรับแล้วดูผลได้ทันทีจาก LIVE PREVIEW</p></div><a class="open-display" href="index.html" target="_blank">เปิดหน้าจอแสดงผล ↗</a></div>
 
-    <label>วันที่
-      <input id="examDate" type="date">
-    </label>
+    <div class="control-layout">
+      <section class="control-panel">
+        <section class="control-card">
+          <h2>รูปตารางสอบ</h2>
+          <label class="file-picker" for="imageFile">เลือกรูปจากเครื่อง<input id="imageFile" type="file" accept="image/*"></label>
+          <p class="hint">เลือกไฟล์แล้ว Preview จะเปลี่ยนทันที กดเผยแพร่เพื่ออัปโหลดขึ้น Supabase</p>
+        </section>
 
-    <label>รูปตารางสอบ
-      <input id="imageFile" type="file" accept="image/*">
-    </label>
-    <div id="previewBox" class="preview-box">ยังไม่ได้เลือกรูป</div>
+        <section class="control-card">
+          <h2>การแสดงผล</h2>
+          <div class="switch-row"><span>แสดงวันที่</span><button class="toggle" type="button" data-setting="showDate" aria-pressed="true"><i></i><b>เปิด</b></button></div>
+          <div class="switch-row"><span>แสดงนาฬิกา</span><button class="toggle" type="button" data-setting="showClock" aria-pressed="true"><i></i><b>เปิด</b></button></div>
+        </section>
 
-    <h2>การแสดงผล</h2>
-    <label>ขนาดนาฬิกา: <b id="clockValue">110</b> px
-      <input id="clockSize" type="range" min="40" max="220" value="110">
-    </label>
+        <section class="control-card">
+          <h2>นาฬิกา</h2>
+          <div class="choice-group"><span>ตำแหน่งแนวตั้ง</span><div><button class="choice" data-group="clockPosition" data-value="top" type="button">ด้านบน</button><button class="choice" data-group="clockPosition" data-value="bottom" type="button">ด้านล่าง</button></div></div>
+          <div class="choice-group"><span>จัดแนว</span><div><button class="choice" data-group="clockAlign" data-value="left" type="button">ซ้าย</button><button class="choice" data-group="clockAlign" data-value="center" type="button">กลาง</button><button class="choice" data-group="clockAlign" data-value="right" type="button">ขวา</button></div></div>
+          <label class="range-label">ขนาด <output id="clockValue">110</output> px<input id="clockSize" type="range" min="40" max="220" value="110"></label>
+        </section>
 
-    <label>ขนาดรูป: <b id="imageValue">90</b>%
-      <input id="imageSize" type="range" min="40" max="100" value="90">
-    </label>
+        <section class="control-card">
+          <h2>รูปตารางสอบ</h2>
+          <div class="choice-group"><span>ตำแหน่งรูป</span><div><button class="choice" data-group="imagePosition" data-value="top" type="button">บน</button><button class="choice" data-group="imagePosition" data-value="center" type="button">กลาง</button><button class="choice" data-group="imagePosition" data-value="bottom" type="button">ล่าง</button></div></div>
+          <label class="range-label">ขนาด <output id="imageValue">90</output>%<input id="imageSize" type="range" min="40" max="100" value="90"></label>
+        </section>
 
-    <label>ตำแหน่งรูป
-      <select id="imagePosition">
-        <option value="center">กึ่งกลาง</option>
-        <option value="top">ด้านบน</option>
-        <option value="bottom">ด้านล่าง</option>
-      </select>
-    </label>
+        <div class="buttons"><button id="saveSettings" class="secondary" type="button">บันทึกการตั้งค่า</button><button id="publish" class="primary" type="button">เผยแพร่รูปและการตั้งค่า</button></div>
+        <p id="status" role="status"></p>
+      </section>
 
-    <label>แสดงวันที่
-      <select id="showDate">
-        <option value="true">เปิด</option>
-        <option value="false">ปิด</option>
-      </select>
-    </label>
-
-    <label>แสดงนาฬิกา
-      <select id="showClock">
-        <option value="true">เปิด</option>
-        <option value="false">ปิด</option>
-      </select>
-    </label>
-
-    <div class="buttons">
-      <button id="saveSettings">💾 บันทึกการตั้งค่า</button>
-      <button id="publish" class="primary">📤 อัปโหลดและเผยแพร่</button>
+      <aside class="live-preview"><div class="preview-heading"><span></span> LIVE PREVIEW</div><div id="previewScreen" class="preview-screen"><header id="previewDate" class="preview-date">กำลังโหลด...</header><div id="previewImageWrap" class="preview-image-wrap"><img id="previewImage" alt="ตัวอย่างตารางสอบ" hidden><div id="previewEmpty">ยังไม่ได้เลือกรูป</div></div><div id="previewClock" class="preview-clock">00:00:00</div></div></aside>
     </div>
-
-    <p id="status"></p>
-    <a href="index.html" target="_blank">เปิดหน้าจอแสดงผล ↗</a>
-  </div>
+  </main>
   <script src="supabase.js"></script>
   <script src="admin.js"></script>
 </body>

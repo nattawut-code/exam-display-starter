@@ -1,31 +1,30 @@
-const settingsKey="exam-display-settings", imageKey="exam-display-image";
-const defaults={clockSize:110,imageSize:90,imagePosition:"center",showDate:true,showClock:true};
+const SETTINGS_KEY="exam-display-settings", IMAGE_KEY="exam-display-image";
+const defaults={clockSize:110,imageSize:90,imagePosition:"center",showDate:true,showClock:true,clockPosition:"bottom",clockAlign:"center"};
 const $=id=>document.getElementById(id);
-let selectedDataUrl=null;
+let settings={...defaults},selectedFile=null,previewUrl="",sb=null;
 
-function load(){
-  const s={...defaults,...JSON.parse(localStorage.getItem(settingsKey)||"{}")};
-  $("clockSize").value=s.clockSize;$("imageSize").value=s.imageSize;
-  $("clockValue").textContent=s.clockSize;$("imageValue").textContent=s.imageSize;
-  $("imagePosition").value=s.imagePosition;$("showDate").value=String(s.showDate);$("showClock").value=String(s.showClock);
+function makeClient(){try{if(window.supabase&&typeof SUPABASE_URL!=="undefined"&&typeof SUPABASE_ANON_KEY!=="undefined")return window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)}catch(e){console.warn("Supabase client unavailable",e)}return null}
+function localSettings(){try{return {...defaults,...JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}")} }catch{return {...defaults}}}
+function setStatus(message){$("status").textContent=message}
+function saveLocal(){localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));if(previewUrl.startsWith("data:"))localStorage.setItem(IMAGE_KEY,previewUrl)}
+function setPreviewImage(url){previewUrl=url||"";const image=$("previewImage"),empty=$("previewEmpty");if(url){image.src=url;image.hidden=false;empty.hidden=true}else{image.hidden=true;empty.hidden=false}}
+function syncControls(){
+  $("clockSize").value=settings.clockSize;$("imageSize").value=settings.imageSize;$("clockValue").value=settings.clockSize;$("imageValue").value=settings.imageSize;
+  document.querySelectorAll(".toggle").forEach(button=>{const on=!!settings[button.dataset.setting];button.classList.toggle("is-on",on);button.setAttribute("aria-pressed",on);button.querySelector("b").textContent=on?"เปิด":"ปิด"});
+  document.querySelectorAll(".choice").forEach(button=>button.classList.toggle("active",settings[button.dataset.group]===button.dataset.value));
 }
-function save(){
-  const s={clockSize:+$("clockSize").value,imageSize:+$("imageSize").value,imagePosition:$("imagePosition").value,showDate:$("showDate").value==="true",showClock:$("showClock").value==="true"};
-  localStorage.setItem(settingsKey,JSON.stringify(s));
-  $("status").textContent="✅ บันทึกการตั้งค่าแล้ว";
+function renderPreview(){
+  const now=new Date();$("previewDate").textContent=now.toLocaleDateString("th-TH",{weekday:"long",year:"numeric",month:"long",day:"numeric"});$("previewClock").textContent=now.toLocaleTimeString("th-TH",{hour12:false});
+  const screen=$("previewScreen"),clock=$("previewClock"),date=$("previewDate"),wrap=$("previewImageWrap");
+  screen.className=`preview-screen clock-${settings.clockPosition} clock-align-${settings.clockAlign}`;clock.style.fontSize=`${Math.max(18,settings.clockSize*.25)}px`;clock.hidden=!settings.showClock;date.hidden=!settings.showDate;wrap.style.alignItems={top:"flex-start",center:"center",bottom:"flex-end"}[settings.imagePosition];$("previewImage").style.maxWidth=`${settings.imageSize}%`;
 }
-$("clockSize").oninput=e=>$("clockValue").textContent=e.target.value;
-$("imageSize").oninput=e=>$("imageValue").textContent=e.target.value;
-$("imageFile").onchange=e=>{
-  const file=e.target.files[0]; if(!file)return;
-  const r=new FileReader();
-  r.onload=()=>{selectedDataUrl=r.result;$("previewBox").innerHTML=`<img src="${selectedDataUrl}" alt="preview">`};
-  r.readAsDataURL(file);
-};
-$("saveSettings").onclick=save;
-$("publish").onclick=()=>{
-  if(selectedDataUrl)localStorage.setItem(imageKey,selectedDataUrl);
-  save();
-  $("status").textContent="✅ เผยแพร่แล้ว (เวอร์ชันทดสอบบนเครื่องนี้)";
-};
-load();
+function readSettingsRow(row){if(!row)return;settings={...settings,clockSize:row.clock_size??settings.clockSize,imageSize:row.image_size??settings.imageSize,imagePosition:row.image_position??settings.imagePosition,showDate:row.show_date??settings.showDate,showClock:row.show_clock??settings.showClock,clockPosition:row.clock_position??settings.clockPosition,clockAlign:row.clock_align??row.clock_alignment??settings.clockAlign};if(row.image_url)setPreviewImage(row.image_url)}
+async function load(){settings=localSettings();setPreviewImage(localStorage.getItem(IMAGE_KEY)||"");sb=makeClient();if(sb){try{const {data,error}=await sb.from("display_settings").select("*").eq("id",1).maybeSingle();if(error)console.warn(error.message);else readSettingsRow(data)}catch(e){console.warn(e)}}syncControls();renderPreview()}
+async function saveSettings(){saveLocal();if(!sb){setStatus("✅ บันทึกในเบราว์เซอร์แล้ว");return true}try{const row={id:1,clock_size:settings.clockSize,image_size:settings.imageSize,image_position:settings.imagePosition,show_date:settings.showDate,show_clock:settings.showClock,clock_position:settings.clockPosition,clock_align:settings.clockAlign};let {error}=await sb.from("display_settings").upsert(row);if(error&&/clock_align/i.test(error.message)){delete row.clock_align;error=(await sb.from("display_settings").upsert(row)).error}if(error)throw error;setStatus("✅ บันทึกการตั้งค่าแล้ว");return true}catch(e){setStatus(`⚠️ บันทึกเฉพาะเครื่อง: ${e.message||"เชื่อมต่อ Supabase ไม่ได้"}`);return false}}
+async function publish(){await saveSettings();if(!selectedFile){setStatus("✅ เผยแพร่การตั้งค่าแล้ว");return}if(!sb){saveLocal();setStatus("✅ บันทึกรูปในเบราว์เซอร์แล้ว");return}try{setStatus("กำลังอัปโหลดรูป...");const ext=(selectedFile.name.split(".").pop()||"jpg").toLowerCase(),path=`display-${Date.now()}.${ext}`;const {error}=await sb.storage.from(STORAGE_BUCKET).upload(path,selectedFile,{contentType:selectedFile.type,upsert:false});if(error)throw error;const {data}=sb.storage.from(STORAGE_BUCKET).getPublicUrl(path);const {error:dbError}=await sb.from("display_settings").upsert({id:1,image_url:data.publicUrl});if(dbError)throw dbError;setPreviewImage(data.publicUrl);setStatus("✅ อัปโหลดและเผยแพร่แล้ว")}catch(e){setStatus(`⚠️ เก็บรูปไว้ในเครื่องแล้ว: ${e.message||"อัปโหลดไม่สำเร็จ"}`);saveLocal()}}
+
+document.querySelectorAll(".toggle").forEach(button=>button.onclick=()=>{settings[button.dataset.setting]=!settings[button.dataset.setting];syncControls();renderPreview()});
+document.querySelectorAll(".choice").forEach(button=>button.onclick=()=>{settings[button.dataset.group]=button.dataset.value;syncControls();renderPreview()});
+$("clockSize").oninput=e=>{settings.clockSize=+e.target.value;syncControls();renderPreview()};$("imageSize").oninput=e=>{settings.imageSize=+e.target.value;syncControls();renderPreview()};
+$("imageFile").onchange=e=>{selectedFile=e.target.files[0]||null;if(!selectedFile)return;const reader=new FileReader();reader.onload=()=>{setPreviewImage(reader.result);renderPreview()};reader.readAsDataURL(selectedFile)};
+$("saveSettings").onclick=saveSettings;$("publish").onclick=publish;setInterval(renderPreview,1000);load();
