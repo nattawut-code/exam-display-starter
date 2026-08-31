@@ -1,46 +1,23 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ตารางสอบ</title>
-<link rel="stylesheet" href="style.css?v=2">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ตารางสอบ</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="display">
-<header class="topbar">
-  <div class="date-block">
-    <div id="dateText">กำลังโหลด...</div>
-    <div id="announcement" class="announcement" hidden></div>
-  </div>
-  <div class="top-actions">
-    <button id="fullscreenBtn" class="ghost-btn">⛶</button>
-  </div>
-</header>
-
-<section class="main-area">
-  <section class="schedule-card" id="scheduleCard">
-    <div class="section-title">📋 ตารางสอบ</div>
-    <div id="scheduleList" class="schedule-list">
-      <div class="empty">กำลังโหลดข้อมูล...</div>
-    </div>
-  </section>
-
-  <section class="image-wrap image-center" id="imageWrap">
-    <img id="examImage" alt="ตารางสอบ" hidden>
-    <div id="empty" class="empty">ยังไม่มีตารางสอบ</div>
-  </section>
-</section>
-
-<footer class="bottom-bar clock-right" id="bottomBar">
-  <div id="nextExam" class="next-exam"></div>
-  <div id="clock" class="clock">00:00:00</div>
-  <button id="fullscreenBtn2" class="ghost-btn bottom-fullscreen">⛶</button>
-</footer>
-</main>
-
-<script src="supabase.js?v=2"></script>
-<script src="app.js?v=2"></script>
+  <main id="display" class="display">
+    <header class="topbar">
+      <div id="dateText">กำลังโหลด...</div>
+    </header>
+    <section class="image-wrap">
+      <img id="examImage" alt="ตารางสอบ" hidden>
+      <div id="empty">ยังไม่มีตารางสอบ</div>
+    </section>
+    <div id="clock" class="clock">00:00:00</div>
+  </main>
+  <script src="supabase.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
