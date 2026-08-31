@@ -24,57 +24,70 @@
 
     <div id="adminControls" class="control-layout" hidden>
       <section class="control-panel">
-        <section class="control-card">
-          <h2>รูปตารางสอบ</h2>
-          <label class="file-picker" for="imageFile">เลือกรูปจากเครื่อง<input id="imageFile" type="file" accept="image/*"></label>
-          <p class="hint">เลือกไฟล์แล้ว Preview จะเปลี่ยนทันที กดเผยแพร่เพื่ออัปโหลดขึ้น Supabase</p>
-        </section>
+        <div class="tab-nav" role="tablist">
+          <button class="tab-btn active" type="button" data-tab="image" role="tab" aria-selected="true">🖼️ รูปตารางสอบ</button>
+          <button class="tab-btn" type="button" data-tab="display" role="tab" aria-selected="false">👁️ การแสดงผล</button>
+          <button class="tab-btn" type="button" data-tab="datetime" role="tab" aria-selected="false">🕒 วันที่ & นาฬิกา</button>
+          <button class="tab-btn" type="button" data-tab="schedules" role="tab" aria-selected="false">📅 ชุดตารางสอบ</button>
+        </div>
 
-        <section class="control-card">
-          <h2>การแสดงผล</h2>
-          <div class="switch-row"><span>แสดงวันที่</span><button class="toggle" type="button" data-setting="showDate" aria-pressed="true"><i></i><b>เปิด</b></button></div>
-          <div class="switch-row"><span>แสดงนาฬิกา</span><button class="toggle" type="button" data-setting="showClock" aria-pressed="true"><i></i><b>เปิด</b></button></div>
-        </section>
+        <div class="tab-panel" data-tab-panel="image">
+          <section class="control-card">
+            <h2>อัปโหลดรูป (ชุดหลัก)</h2>
+            <label class="file-picker" for="imageFile">เลือกรูปจากเครื่อง<input id="imageFile" type="file" accept="image/*"></label>
+            <p class="hint">เลือกไฟล์แล้ว Preview จะเปลี่ยนทันที กดเผยแพร่เพื่ออัปโหลดขึ้น Supabase</p>
+          </section>
+          <section class="control-card">
+            <h2>ตำแหน่งและขนาดรูป</h2>
+            <div class="choice-group"><span>ตำแหน่งรูป</span><div><button class="choice" data-group="imagePosition" data-value="top" type="button">บน</button><button class="choice" data-group="imagePosition" data-value="center" type="button">กลาง</button><button class="choice" data-group="imagePosition" data-value="bottom" type="button">ล่าง</button></div></div>
+            <label class="range-label">ขนาด <output id="imageValue">90</output>%<input id="imageSize" type="range" min="40" max="100" value="90"></label>
+          </section>
+        </div>
 
-        <section class="control-card"><h2>วันที่</h2><label class="range-label">ขนาดตัวอักษร <output id="dateSizeValue">36</output> px<input id="dateSize" type="range" min="18" max="80" value="36"></label><label class="range-label">เลื่อนขึ้น / ลง <output id="dateOffsetValue">0</output> px<input id="dateOffset" type="range" min="-300" max="300" value="0"></label></section>
+        <div class="tab-panel" data-tab-panel="display" hidden>
+          <section class="control-card">
+            <h2>เปิด/ปิดองค์ประกอบ</h2>
+            <div class="switch-row"><span>แสดงวันที่</span><button class="toggle" type="button" data-setting="showDate" aria-pressed="true"><i></i><b>เปิด</b></button></div>
+            <div class="switch-row"><span>แสดงนาฬิกา</span><button class="toggle" type="button" data-setting="showClock" aria-pressed="true"><i></i><b>เปิด</b></button></div>
+          </section>
+        </div>
 
-        <section class="control-card">
-          <h2>นาฬิกา</h2>
-          <div class="choice-group"><span>ตำแหน่งแนวตั้ง</span><div><button class="choice" data-group="clockPosition" data-value="top" type="button">ด้านบน</button><button class="choice" data-group="clockPosition" data-value="bottom" type="button">ด้านล่าง</button></div></div>
-          <div class="choice-group"><span>จัดแนว</span><div><button class="choice" data-group="clockAlign" data-value="left" type="button">ซ้าย</button><button class="choice" data-group="clockAlign" data-value="center" type="button">กลาง</button><button class="choice" data-group="clockAlign" data-value="right" type="button">ขวา</button></div></div>
-          <label class="range-label">ขนาด <output id="clockValue">110</output> px<input id="clockSize" type="range" min="40" max="220" value="110"></label>
-          <label class="range-label">เลื่อนขึ้น / ลง <output id="clockOffsetValue">0</output> px<input id="clockOffset" type="range" min="-300" max="300" value="0"></label>
-          <label class="select-label">ฟอนต์นาฬิกา<select id="clockFont"><option value="system">มาตรฐาน</option><option value="serif">ทางการ</option><option value="mono">ดิจิทัล</option><option value="thai">ไทยอ่านง่าย</option></select></label>
-        </section>
+        <div class="tab-panel" data-tab-panel="datetime" hidden>
+          <section class="control-card"><h2>วันที่</h2><label class="range-label">ขนาดตัวอักษร <output id="dateSizeValue">36</output> px<input id="dateSize" type="range" min="18" max="80" value="36"></label><label class="range-label">เลื่อนขึ้น / ลง <output id="dateOffsetValue">0</output> px<input id="dateOffset" type="range" min="-300" max="300" value="0"></label></section>
+          <section class="control-card">
+            <h2>นาฬิกา</h2>
+            <div class="choice-group"><span>ตำแหน่งแนวตั้ง</span><div><button class="choice" data-group="clockPosition" data-value="top" type="button">ด้านบน</button><button class="choice" data-group="clockPosition" data-value="bottom" type="button">ด้านล่าง</button></div></div>
+            <div class="choice-group"><span>จัดแนว</span><div><button class="choice" data-group="clockAlign" data-value="left" type="button">ซ้าย</button><button class="choice" data-group="clockAlign" data-value="center" type="button">กลาง</button><button class="choice" data-group="clockAlign" data-value="right" type="button">ขวา</button></div></div>
+            <label class="range-label">ขนาด <output id="clockValue">110</output> px<input id="clockSize" type="range" min="40" max="220" value="110"></label>
+            <label class="range-label">เลื่อนขึ้น / ลง <output id="clockOffsetValue">0</output> px<input id="clockOffset" type="range" min="-300" max="300" value="0"></label>
+            <label class="select-label">ฟอนต์นาฬิกา<select id="clockFont"><option value="system">มาตรฐาน</option><option value="serif">ทางการ</option><option value="mono">ดิจิทัล</option><option value="thai">ไทยอ่านง่าย</option></select></label>
+          </section>
+        </div>
 
-        <section class="control-card">
-          <h2>รูปตารางสอบ</h2>
-          <div class="choice-group"><span>ตำแหน่งรูป</span><div><button class="choice" data-group="imagePosition" data-value="top" type="button">บน</button><button class="choice" data-group="imagePosition" data-value="center" type="button">กลาง</button><button class="choice" data-group="imagePosition" data-value="bottom" type="button">ล่าง</button></div></div>
-          <label class="range-label">ขนาด <output id="imageValue">90</output>%<input id="imageSize" type="range" min="40" max="100" value="90"></label>
-        </section>
-        <section class="control-card">
-          <h2>สไลด์โชว์ (เมื่อมีหลายชุด)</h2>
-          <label class="range-label">สลับรูปทุก <output id="slideshowSecondsValue">8</output> วินาที<input id="slideshowSeconds" type="range" min="3" max="60" value="8"></label>
-          <p class="hint">ถ้ามีตารางสอบที่ "กำลังแสดง" มากกว่า 1 ชุด จอจะสลับรูปให้อัตโนมัติตามเวลานี้</p>
-        </section>
+        <div class="tab-panel" data-tab-panel="schedules" hidden>
+          <section class="control-card">
+            <h2>สไลด์โชว์ (เมื่อมีหลายชุด)</h2>
+            <label class="range-label">สลับรูปทุก <output id="slideshowSecondsValue">8</output> วินาที<input id="slideshowSeconds" type="range" min="3" max="60" value="8"></label>
+            <p class="hint">ถ้ามีตารางสอบที่ "กำลังแสดง" มากกว่า 1 ชุด จอจะสลับรูปให้อัตโนมัติตามเวลานี้</p>
+          </section>
+          <section class="control-card" aria-label="จัดการชุดตารางสอบหลายชุด">
+            <h2>ชุดตารางสอบ (หลายชุด / ตั้งเวลาแสดงอัตโนมัติ)</h2>
+            <p class="hint">อัปโหลดได้หลายชุด เช่น แยกตามชั้น/ห้องสอบ ตั้งวันที่เริ่ม-สิ้นสุดเพื่อให้ระบบแสดงอัตโนมัติตามช่วงวันที่ (เว้นว่างไว้ = แสดงตลอด) ใช้ปุ่ม ↑ ↓ เพื่อจัดลำดับการสลับรูป</p>
+            <div class="schedule-add">
+              <label class="file-picker" for="scheduleFile">เลือกรูปชุดใหม่<input id="scheduleFile" type="file" accept="image/*"></label>
+              <input id="scheduleTitle" type="text" placeholder="ชื่อชุด เช่น ม.1 อาคาร 2">
+              <div class="schedule-dates">
+                <label>เริ่มแสดง<input id="scheduleStart" type="date"></label>
+                <label>ถึงวันที่<input id="scheduleEnd" type="date"></label>
+              </div>
+              <button id="scheduleAdd" class="primary" type="button">เพิ่มชุดตารางสอบ</button>
+            </div>
+            <div id="scheduleList" class="schedule-list"></div>
+          </section>
+        </div>
 
         <div class="buttons"><button id="saveSettings" class="secondary" type="button">บันทึกการตั้งค่า</button><button id="publish" class="primary" type="button">เผยแพร่รูปและการตั้งค่า</button></div>
         <p id="status" role="status"></p>
-
-        <section class="control-card" aria-label="จัดการชุดตารางสอบหลายชุด">
-          <h2>ชุดตารางสอบ (หลายชุด / ตั้งเวลาแสดงอัตโนมัติ)</h2>
-          <p class="hint">อัปโหลดได้หลายชุด เช่น แยกตามชั้น/ห้องสอบ ตั้งวันที่เริ่ม-สิ้นสุดเพื่อให้ระบบแสดงอัตโนมัติตามช่วงวันที่ (เว้นว่างไว้ = แสดงตลอด) ใช้ปุ่ม ↑ ↓ เพื่อจัดลำดับการสลับรูป</p>
-          <div class="schedule-add">
-            <label class="file-picker" for="scheduleFile">เลือกรูปชุดใหม่<input id="scheduleFile" type="file" accept="image/*"></label>
-            <input id="scheduleTitle" type="text" placeholder="ชื่อชุด เช่น ม.1 อาคาร 2">
-            <div class="schedule-dates">
-              <label>เริ่มแสดง<input id="scheduleStart" type="date"></label>
-              <label>ถึงวันที่<input id="scheduleEnd" type="date"></label>
-            </div>
-            <button id="scheduleAdd" class="primary" type="button">เพิ่มชุดตารางสอบ</button>
-          </div>
-          <div id="scheduleList" class="schedule-list"></div>
-        </section>
       </section>
 
       <aside class="live-preview"><div class="preview-heading"><span></span> LIVE PREVIEW</div><div id="previewScreen" class="preview-screen"><header id="previewDate" class="preview-date">กำลังโหลด...</header><div id="previewImageWrap" class="preview-image-wrap"><img id="previewImage" alt="ตัวอย่างตารางสอบ" hidden><div id="previewEmpty">ยังไม่ได้เลือกรูป</div></div><div id="previewClock" class="preview-clock">00:00:00</div></div></aside>

@@ -126,6 +126,10 @@ async function addSchedule(){
 document.querySelectorAll(".toggle").forEach(button=>button.onclick=()=>{settings[button.dataset.setting]=!settings[button.dataset.setting];syncControls();renderPreview()});
 document.querySelectorAll(".choice").forEach(button=>button.onclick=()=>{if(!button.dataset.group)return;settings[button.dataset.group]=button.dataset.value;syncControls();renderPreview()});
 document.querySelectorAll(".theme-choice").forEach(button=>button.onclick=()=>{settings.theme=button.dataset.theme;syncControls();renderPreview()});
+document.querySelectorAll(".tab-btn").forEach(button=>button.onclick=()=>{
+  document.querySelectorAll(".tab-btn").forEach(b=>{b.classList.toggle("active",b===button);b.setAttribute("aria-selected",b===button)});
+  document.querySelectorAll(".tab-panel").forEach(panel=>{panel.hidden=panel.dataset.tabPanel!==button.dataset.tab});
+});
 $("clockSize").oninput=e=>{settings.clockSize=+e.target.value;syncControls();renderPreview()};$("imageSize").oninput=e=>{settings.imageSize=+e.target.value;syncControls();renderPreview()};$("clockOffset").oninput=e=>{settings.clockOffset=+e.target.value;syncControls();renderPreview()};$("dateSize").oninput=e=>{settings.dateSize=+e.target.value;syncControls();renderPreview()};$("dateOffset").oninput=e=>{settings.dateOffset=+e.target.value;syncControls();renderPreview()};$("slideshowSeconds").oninput=e=>{settings.slideshowSeconds=+e.target.value;syncControls()};$("clockFont").onchange=e=>{settings.clockFont=e.target.value;renderPreview()};
 $("imageFile").onchange=e=>{selectedFile=e.target.files[0]||null;if(!selectedFile)return;const reader=new FileReader();reader.onload=()=>{setPreviewImage(reader.result);renderPreview()};reader.readAsDataURL(selectedFile)};
 $("scheduleFile").onchange=e=>{scheduleFile=e.target.files[0]||null};
