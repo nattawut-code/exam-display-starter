@@ -36,7 +36,7 @@
           <div class="switch-row"><span>แสดงนาฬิกา</span><button class="toggle" type="button" data-setting="showClock" aria-pressed="true"><i></i><b>เปิด</b></button></div>
         </section>
 
-        <section class="control-card"><h2>วันที่</h2><label class="range-label">ขนาดตัวอักษร <output id="dateSizeValue">36</output> px<input id="dateSize" type="range" min="18" max="80" value="36"></label></section>
+        <section class="control-card"><h2>วันที่</h2><label class="range-label">ขนาดตัวอักษร <output id="dateSizeValue">36</output> px<input id="dateSize" type="range" min="18" max="80" value="36"></label><label class="range-label">เลื่อนขึ้น / ลง <output id="dateOffsetValue">0</output> px<input id="dateOffset" type="range" min="-300" max="300" value="0"></label></section>
 
         <section class="control-card">
           <h2>นาฬิกา</h2>
@@ -52,8 +52,29 @@
           <div class="choice-group"><span>ตำแหน่งรูป</span><div><button class="choice" data-group="imagePosition" data-value="top" type="button">บน</button><button class="choice" data-group="imagePosition" data-value="center" type="button">กลาง</button><button class="choice" data-group="imagePosition" data-value="bottom" type="button">ล่าง</button></div></div>
           <label class="range-label">ขนาด <output id="imageValue">90</output>%<input id="imageSize" type="range" min="40" max="100" value="90"></label>
         </section>
+        <section class="control-card">
+          <h2>สไลด์โชว์ (เมื่อมีหลายชุด)</h2>
+          <label class="range-label">สลับรูปทุก <output id="slideshowSecondsValue">8</output> วินาที<input id="slideshowSeconds" type="range" min="3" max="60" value="8"></label>
+          <p class="hint">ถ้ามีตารางสอบที่ "กำลังแสดง" มากกว่า 1 ชุด จอจะสลับรูปให้อัตโนมัติตามเวลานี้</p>
+        </section>
+
         <div class="buttons"><button id="saveSettings" class="secondary" type="button">บันทึกการตั้งค่า</button><button id="publish" class="primary" type="button">เผยแพร่รูปและการตั้งค่า</button></div>
         <p id="status" role="status"></p>
+
+        <section class="control-card" aria-label="จัดการชุดตารางสอบหลายชุด">
+          <h2>ชุดตารางสอบ (หลายชุด / ตั้งเวลาแสดงอัตโนมัติ)</h2>
+          <p class="hint">อัปโหลดได้หลายชุด เช่น แยกตามชั้น/ห้องสอบ ตั้งวันที่เริ่ม-สิ้นสุดเพื่อให้ระบบแสดงอัตโนมัติตามช่วงวันที่ (เว้นว่างไว้ = แสดงตลอด) ใช้ปุ่ม ↑ ↓ เพื่อจัดลำดับการสลับรูป</p>
+          <div class="schedule-add">
+            <label class="file-picker" for="scheduleFile">เลือกรูปชุดใหม่<input id="scheduleFile" type="file" accept="image/*"></label>
+            <input id="scheduleTitle" type="text" placeholder="ชื่อชุด เช่น ม.1 อาคาร 2">
+            <div class="schedule-dates">
+              <label>เริ่มแสดง<input id="scheduleStart" type="date"></label>
+              <label>ถึงวันที่<input id="scheduleEnd" type="date"></label>
+            </div>
+            <button id="scheduleAdd" class="primary" type="button">เพิ่มชุดตารางสอบ</button>
+          </div>
+          <div id="scheduleList" class="schedule-list"></div>
+        </section>
       </section>
 
       <aside class="live-preview"><div class="preview-heading"><span></span> LIVE PREVIEW</div><div id="previewScreen" class="preview-screen"><header id="previewDate" class="preview-date">กำลังโหลด...</header><div id="previewImageWrap" class="preview-image-wrap"><img id="previewImage" alt="ตัวอย่างตารางสอบ" hidden><div id="previewEmpty">ยังไม่ได้เลือกรูป</div></div><div id="previewClock" class="preview-clock">00:00:00</div></div></aside>
