@@ -13,6 +13,7 @@ create table if not exists public.display_settings (
   show_date boolean not null default true,
   show_clock boolean not null default true,
   date_size integer not null default 36,
+  theme text not null default 'midnight',
   image_url text,
   updated_at timestamptz not null default now()
 );
@@ -21,6 +22,7 @@ alter table public.display_settings add column if not exists clock_align text no
 alter table public.display_settings add column if not exists clock_offset integer not null default 0;
 alter table public.display_settings add column if not exists clock_font text not null default 'system';
 alter table public.display_settings add column if not exists date_size integer not null default 36;
+alter table public.display_settings add column if not exists theme text not null default 'midnight';
 
 insert into public.display_settings (id) values (1) on conflict (id) do nothing;
 
