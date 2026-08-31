@@ -22,7 +22,7 @@
       <button id="signOut" class="secondary" type="button" hidden>ออกจากระบบ</button>
     </section>
 
-    <div class="control-layout">
+    <div id="adminControls" class="control-layout" hidden>
       <section class="control-panel">
         <section class="control-card">
           <h2>รูปตารางสอบ</h2>
@@ -35,6 +35,8 @@
           <div class="switch-row"><span>แสดงวันที่</span><button class="toggle" type="button" data-setting="showDate" aria-pressed="true"><i></i><b>เปิด</b></button></div>
           <div class="switch-row"><span>แสดงนาฬิกา</span><button class="toggle" type="button" data-setting="showClock" aria-pressed="true"><i></i><b>เปิด</b></button></div>
         </section>
+
+        <section class="control-card"><h2>วันที่</h2><label class="range-label">ขนาดตัวอักษร <output id="dateSizeValue">36</output> px<input id="dateSize" type="range" min="18" max="80" value="36"></label></section>
 
         <section class="control-card">
           <h2>นาฬิกา</h2>
@@ -50,8 +52,6 @@
           <div class="choice-group"><span>ตำแหน่งรูป</span><div><button class="choice" data-group="imagePosition" data-value="top" type="button">บน</button><button class="choice" data-group="imagePosition" data-value="center" type="button">กลาง</button><button class="choice" data-group="imagePosition" data-value="bottom" type="button">ล่าง</button></div></div>
           <label class="range-label">ขนาด <output id="imageValue">90</output>%<input id="imageSize" type="range" min="40" max="100" value="90"></label>
         </section>
-        <section class="control-card"><h2>วันที่</h2><label class="range-label">ขนาดตัวอักษร <output id="dateSizeValue">36</output> px<input id="dateSize" type="range" min="18" max="80" value="36"></label></section>
-
         <div class="buttons"><button id="saveSettings" class="secondary" type="button">บันทึกการตั้งค่า</button><button id="publish" class="primary" type="button">เผยแพร่รูปและการตั้งค่า</button></div>
         <p id="status" role="status"></p>
       </section>

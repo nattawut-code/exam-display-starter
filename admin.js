@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id);
 let settings={...defaults},selectedFile=null,previewUrl="",sb=null;
 
 function makeClient(){try{if(window.supabase&&typeof SUPABASE_URL!=="undefined"&&typeof SUPABASE_ANON_KEY!=="undefined")return window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)}catch(e){console.warn("Supabase client unavailable",e)}return null}
-function setAuthState(session){const signedIn=!!session;$("signInForm").hidden=signedIn;$("signOut").hidden=!signedIn;$("authStatus").textContent=signedIn?`เข้าสู่ระบบแล้ว: ${session.user.email}`:"กรุณาเข้าสู่ระบบก่อนบันทึกหรือเผยแพร่ขึ้น Supabase";$("saveSettings").disabled=!signedIn;$("publish").disabled=!signedIn}
+function setAuthState(session){const signedIn=!!session;$("signInForm").hidden=signedIn;$("signOut").hidden=!signedIn;$("adminControls").hidden=!signedIn;$("authStatus").textContent=signedIn?`เข้าสู่ระบบแล้ว: ${session.user.email}`:"กรุณาเข้าสู่ระบบก่อนใช้งานหน้า Admin";$("saveSettings").disabled=!signedIn;$("publish").disabled=!signedIn}
 async function signIn(){if(!sb)return setStatus("⚠️ ไม่พบการตั้งค่า Supabase");const email=$("email").value.trim(),password=$("password").value;if(!email||!password)return setStatus("⚠️ กรอกอีเมลและรหัสผ่าน");setStatus("กำลังเข้าสู่ระบบ...");const {error}=await sb.auth.signInWithPassword({email,password});if(error)return setStatus(`⚠️ เข้าสู่ระบบไม่สำเร็จ: ${error.message}`);setStatus("✅ เข้าสู่ระบบแล้ว")}
 async function signOut(){if(!sb)return;const {error}=await sb.auth.signOut();setStatus(error?`⚠️ ${error.message}`:"ออกจากระบบแล้ว")}
 function localSettings(){try{return {...defaults,...JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}")} }catch{return {...defaults}}}
