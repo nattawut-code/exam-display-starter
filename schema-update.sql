@@ -1,3 +1,2 @@
--- Existing installations: run schema.sql instead. It is safe to run repeatedly
--- and includes the current display-setting columns, RLS policies, Realtime,
--- and the public exam-images bucket setup.
+-- Run this in Supabase SQL Editor when upgrading an existing installation.
+alter table public.display_settings add column if not exists theme text not null default 'midnight';
