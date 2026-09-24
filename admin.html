@@ -69,6 +69,12 @@
         </div>
 
         <div class="tab-panel" data-tab-panel="schedules" hidden>
+          <section class="broadcast-status" aria-live="polite">
+            <div class="broadcast-label"><span></span> ON AIR</div>
+            <div id="onAirTitle" class="broadcast-title">กำลังตรวจสอบตาราง...</div>
+            <p id="onAirDetail" class="broadcast-detail"></p>
+            <div class="countdown"><span id="countdownLabel">ตารางถัดไป</span><strong id="countdownValue">--:--:--</strong><small id="countdownDetail"></small></div>
+          </section>
           <section class="control-card">
             <h2>สไลด์โชว์ (เมื่อมีหลายชุด)</h2>
             <label class="range-label">สลับรูปทุก <output id="slideshowSecondsValue">8</output> วินาที<input id="slideshowSeconds" type="range" min="3" max="60" value="8"></label>
@@ -94,7 +100,7 @@
         <p id="status" role="status"></p>
       </section>
 
-      <aside class="live-preview"><div class="preview-heading"><span></span> LIVE PREVIEW</div><div id="previewScreen" class="preview-screen"><header id="previewDate" class="preview-date">กำลังโหลด...</header><div id="previewImageWrap" class="preview-image-wrap"><img id="previewImage" alt="ตัวอย่างตารางสอบ" hidden><div id="previewEmpty">ยังไม่ได้เลือกรูป</div></div><div id="previewClock" class="preview-clock">00:00:00</div></div></aside>
+      <aside class="live-preview"><div class="preview-heading"><span></span> LIVE PREVIEW</div><p id="previewScheduleLabel" class="preview-schedule-label">ตัวอย่างการแสดงผล</p><div id="previewScreen" class="preview-screen"><header id="previewDate" class="preview-date">กำลังโหลด...</header><div id="previewImageWrap" class="preview-image-wrap"><img id="previewImage" alt="ตัวอย่างตารางสอบ" hidden><div id="previewEmpty">ยังไม่ได้เลือกรูป</div></div><div id="previewClock" class="preview-clock">00:00:00</div></div></aside>
     </div>
   </main>
   <script src="supabase.js"></script>
