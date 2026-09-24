@@ -35,12 +35,16 @@
           <section class="control-card">
             <h2>อัปโหลดรูป (ชุดหลัก)</h2>
             <label class="file-picker" for="imageFile">เลือกรูปจากเครื่อง<input id="imageFile" type="file" accept="image/*"></label>
-            <p class="hint">เลือกไฟล์แล้ว Preview จะเปลี่ยนทันที กดเผยแพร่เพื่ออัปโหลดขึ้น Supabase</p>
+            <p class="hint">เลือกไฟล์แล้ว Preview จะเปลี่ยนทันที กดเผยแพร่เพื่ออัปโหลดขึ้น Supabase</p><div class="buttons"><button id="deleteMainImage" class="secondary" type="button">🗑️ ลบรูปชุดหลัก</button></div>
           </section>
           <section class="control-card">
             <h2>ตำแหน่งและขนาดรูป</h2>
             <div class="choice-group"><span>ตำแหน่งรูป</span><div><button class="choice" data-group="imagePosition" data-value="top" type="button">บน</button><button class="choice" data-group="imagePosition" data-value="center" type="button">กลาง</button><button class="choice" data-group="imagePosition" data-value="bottom" type="button">ล่าง</button></div></div>
-            <label class="range-label">ขนาด <output id="imageValue">90</output>%<input id="imageSize" type="range" min="40" max="100" value="90"></label>
+            <label class="range-label">ขนาด <output id="imageValue">90</output>%<input id="imageSize" type="range" min="40" max="200" value="90"></label>
+<div class="choice-group"><span>จัดแนวซ้าย / ขวา</span><div><button class="choice" data-group="imageAlign" data-value="left" type="button">ซ้าย</button><button class="choice" data-group="imageAlign" data-value="center" type="button">กลาง</button><button class="choice" data-group="imageAlign" data-value="right" type="button">ขวา</button></div></div>
+<div class="choice-group"><span>การแสดงรูป</span><div><button class="choice" data-group="imageFit" data-value="contain" type="button">พอดีภาพ</button><button class="choice" data-group="imageFit" data-value="cover" type="button">เต็มพื้นที่</button></div></div>
+<label class="range-label">เลื่อนซ้าย / ขวา <output id="imageOffsetXValue">0</output> px<input id="imageOffsetX" type="range" min="-800" max="800" value="0"></label>
+<label class="range-label">เลื่อนขึ้น / ลง <output id="imageOffsetYValue">0</output> px<input id="imageOffsetY" type="range" min="-800" max="800" value="0"></label>
           </section>
         </div>
 
